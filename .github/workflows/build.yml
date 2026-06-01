@@ -22,14 +22,22 @@ jobs:
 
       - name: 构建 macOS App
         run: |
-          python3 setup.py py2app --dist-dir dist
+          python3 -m PySide6.scripts.pyside6_tool check 2>/dev/null || true
+          python3 setup.py py2app --dist-dir dist 2>&1
 
       - name: 打包 ZIP
         run: |
           cd dist
           zip -r ../PDF工具箱_macOS.zip PDF工具箱.app
 
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDF工具箱_macOS
+          path: PDF工具箱_macOS.zip
+
       - name: 上传到 Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: PDF工具箱_macOS.zip
@@ -46,13 +54,20 @@ jobs:
 
       - name: 构建 Windows exe
         run: |
-          pyinstaller --windowed --name "PDF工具箱" --add-data "core;core" --add-data "ui;ui" --add-data "utils;utils" main.py
+          pyinstaller --windowed --onefile --name "PDF工具箱" --hidden-import PySide6.QtCore --hidden-import PySide6.QtWidgets --hidden-import PySide6.QtGui --hidden-import fitz --hidden-import weasyprint --hidden-import docx main.py
 
       - name: 打包 ZIP
         run: |
-          Compress-Archive -Path dist/PDF工具箱 -DestinationPath PDF工具箱_Windows.zip
+          Compress-Archive -Path dist/PDF工具箱.exe -DestinationPath PDF工具箱_Windows.zip -Force
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDF工具箱_Windows
+          path: PDF工具箱_Windows.zip
 
       - name: 上传到 Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: PDF工具箱_Windows.zip

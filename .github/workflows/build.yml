@@ -1,0 +1,58 @@
+name: 打包构建
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装系统依赖
+        run: |
+          brew install pango libffi
+
+      - name: 安装 Python 依赖
+        run: |
+          pip install -r requirements.txt
+          pip install py2app
+
+      - name: 构建 macOS App
+        run: |
+          python3 setup.py py2app --dist-dir dist
+
+      - name: 打包 ZIP
+        run: |
+          cd dist
+          zip -r ../PDF工具箱_macOS.zip PDF工具箱.app
+
+      - name: 上传到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: PDF工具箱_macOS.zip
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Python 依赖
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: 构建 Windows exe
+        run: |
+          pyinstaller --windowed --name "PDF工具箱" --add-data "core;core" --add-data "ui;ui" --add-data "utils;utils" main.py
+
+      - name: 打包 ZIP
+        run: |
+          Compress-Archive -Path dist/PDF工具箱 -DestinationPath PDF工具箱_Windows.zip
+
+      - name: 上传到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: PDF工具箱_Windows.zip

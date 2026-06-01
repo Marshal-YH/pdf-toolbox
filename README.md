@@ -169,3 +169,16 @@ python3 /path/to/test_all.py
 - [PyMuPDF](https://github.com/pymupdf/PyMuPDF) — 高性能 PDF 处理库
 - [WeasyPrint](https://github.com/Kozea/WeasyPrint) — HTML/CSS 转 PDF 引擎
 - [WPS PDF](https://www.wps.cn/) — 产品设计参考（功能流程、配色方案）
+
+---
+
+## 🚀 打包为独立 App（macOS）
+
+```bash
+pip install py2app
+python3 setup.py py2app --dist-dir dist
+```
+
+构建完成后，`dist/PDF工具箱.app` 可直接拖到「应用程序」中使用。
+
+> 首次打开如果提示「未识别的开发者」，前往 **系统设置 → 隐私与安全性**，点击「仍要打开」即可。

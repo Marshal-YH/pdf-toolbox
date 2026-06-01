@@ -33,3 +33,5 @@ output/
 # Environment
 .env
 .env.local
+dist/
+build/
